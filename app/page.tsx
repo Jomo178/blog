@@ -1,25 +1,17 @@
-import { db } from "@/lib/database";
-import { user } from "@/lib/database/schema";
+import MainNavbar from "@/components/main-nav";
+import MobileNavbar from "@/components/mobile-nav";
 
 export default async function Home() {
-  const users = await db.select().from(user);
-
-  const createUser = async () => {
-    "use server";
-
-    await db.insert(user).values({ fullName: "John Doe" });
-  };
-
   return (
     <>
-      <p>my users:</p>
-      {users.map((user) => (
-        <div key={user.id}>{user.fullName}</div>
-      ))}
-
-      <form action={createUser}>
-        <button>create user</button>
-      </form>
+      <div className="flex min-h-screen flex-col">
+        <header className="container z-40 bg-background">
+          <div className="flex h-20 items-center justify-between py-6">
+            {/* <MainNavbar /> */}
+            <MobileNavbar />
+          </div>
+        </header>
+      </div>
     </>
   );
 }
