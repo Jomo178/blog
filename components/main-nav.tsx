@@ -1,29 +1,58 @@
+"use client";
+
 import Link from "next/link";
 import { Icons } from "./icons";
-import { NavigationMenuDemo } from "./component-test";
-import { buttonVariants } from "./ui/button";
+import { Button, buttonVariants } from "./ui/button";
 import { cn } from "@/lib/utils";
-import { ModeToggle } from "./language-menu";
+import { LanguageHandler } from "./language-menu";
 import { useState } from "react";
 
-function MainNavbar() {
+import MobileNavbar from "./mobile-nav";
+import { useSelectedLayoutSegment } from "next/navigation";
+import { NavbarItems } from "@/types";
+
+interface MobileNavProps {
+  items: NavbarItems[];
+  children?: React.ReactNode;
+}
+
+function MainNavbar({ items, children }: MobileNavProps) {
+  const [showMobileMenu, setShowMobileMenu] = useState<boolean>(false);
+  const segment = useSelectedLayoutSegment();
+
   return (
     <>
-      <nav className="hidden sm:flex sm:w-full sm:justify-between">
+      <nav className="flex w-full justify-between">
         <div className="flex gap-6">
           <Link href="/" className="flex items-center gap-3 space-x-2">
             <Icons.logo />
-            <span className="hidden font-bold sm:inline-block">Blog Maker</span>
+            <span className="inline-block font-bold">Blog Maker</span>
           </Link>
-          <NavigationMenuDemo></NavigationMenuDemo>
+          {items.map((item, index) => (
+            <Link
+              key={index}
+              href={item.href}
+              className={cn(
+                "hidden items-center text-lg font-medium transition-colors hover:text-foreground/80 sm:text-sm md:flex",
+                item.href.startsWith(`/${segment}`)
+                  ? "text-foreground"
+                  : "text-foreground/60",
+                item.name === "Home" && segment == null
+                  ? "text-foreground"
+                  : "text-foreground/60"
+              )}
+            >
+              {item.name}
+            </Link>
+          ))}
         </div>
         <div className="flex items-center gap-3">
-          <ModeToggle />
+          <LanguageHandler />
           <Link
             href="/premium"
             className={cn(
               buttonVariants({ variant: "secondary", size: "lg" }),
-              "gap-2 px-4",
+              "gap-2 px-4"
             )}
           >
             <Icons.premium strokeWidth={3} size={18} />
@@ -33,12 +62,23 @@ function MainNavbar() {
             href="/login"
             className={cn(
               buttonVariants({ variant: "secondary", size: "lg" }),
-              "px-4",
+              "hidden px-4 md:flex"
             )}
           >
             Login
           </Link>
+          <Button
+            onClick={() => setShowMobileMenu(!showMobileMenu)}
+            variant="outline"
+            size="icon"
+            className="md:hidden"
+          >
+            {showMobileMenu ? <Icons.close /> : Icons.menu}
+          </Button>
         </div>
+        {showMobileMenu && (
+          <MobileNavbar items={items}>{children}</MobileNavbar>
+        )}
       </nav>
     </>
   );

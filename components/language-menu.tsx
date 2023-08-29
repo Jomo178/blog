@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -12,12 +11,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Image from "next/image";
 
-export function ModeToggle() {
-  const { setTheme } = useTheme();
-
+export function LanguageHandler() {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+      <DropdownMenuTrigger asChild className="hidden md:flex">
         <Button variant="ghost" size="lg" className="gap-2 px-4">
           <Image
             src="/flags/uk.svg"
@@ -30,10 +27,7 @@ export function ModeToggle() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="center" className="max-w-fit">
-        <DropdownMenuItem
-          onClick={() => setTheme("light")}
-          className="cursor-pointer items-center gap-2"
-        >
+        <DropdownMenuItem className="cursor-pointer items-center gap-2">
           <Image
             src="/flags/germany.svg"
             alt="uk flag"

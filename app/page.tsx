@@ -1,5 +1,5 @@
 import MainNavbar from "@/components/main-nav";
-import MobileNavbar from "@/components/mobile-nav";
+import { NavbarItems } from "@/config/navbar";
 
 export default async function Home() {
   return (
@@ -7,8 +7,7 @@ export default async function Home() {
       <div className="flex min-h-screen flex-col">
         <header className="container z-40 bg-background">
           <div className="flex h-20 items-center justify-between py-6">
-            {/* <MainNavbar /> */}
-            <MobileNavbar />
+            <MainNavbar items={NavbarItems} />
           </div>
         </header>
       </div>
