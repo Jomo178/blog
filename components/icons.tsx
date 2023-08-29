@@ -17,7 +17,7 @@ export const Icons = {
         d="M4.283 15H17m0-7H1m16-7H9.972"
         stroke="currentColor"
         stroke-width="1.5"
-        stroke-linecap="round"
+        strokeLinecap="round"
       ></path>
     </svg>
   ),

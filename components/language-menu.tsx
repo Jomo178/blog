@@ -33,7 +33,6 @@ export function LanguageHandler() {
             alt="uk flag"
             width={15}
             height={15}
-            priority
           />
           <span>Deutsch</span>
         </DropdownMenuItem>
