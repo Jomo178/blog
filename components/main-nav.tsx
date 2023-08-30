@@ -4,12 +4,12 @@ import Link from "next/link";
 import { Icons } from "./icons";
 import { Button, buttonVariants } from "./ui/button";
 import { cn } from "@/lib/utils";
-import { LanguageHandler } from "./language-menu";
 import { useState } from "react";
 
 import MobileNavbar from "./mobile-nav";
 import { useSelectedLayoutSegment } from "next/navigation";
 import { NavbarItems } from "@/types";
+import ToggleTheme from "./toggle-theme";
 
 interface MobileNavProps {
   items: NavbarItems[];
@@ -47,7 +47,7 @@ function MainNavbar({ items, children }: MobileNavProps) {
           ))}
         </div>
         <div className="flex items-center gap-3">
-          <LanguageHandler />
+          <ToggleTheme />
           <Link
             href="/premium"
             className={cn(
@@ -69,7 +69,7 @@ function MainNavbar({ items, children }: MobileNavProps) {
           </Link>
           <Button
             onClick={() => setShowMobileMenu(!showMobileMenu)}
-            variant="outline"
+            variant="ghost"
             size="icon"
             className="md:hidden"
           >

@@ -1,9 +1,12 @@
-import { Blocks, Crown, X } from "lucide-react";
+import { Blocks, Crown, Github, Moon, Sun, X } from "lucide-react";
 
 export const Icons = {
   logo: Blocks,
   close: X,
   premium: Crown,
+  lightMode: Sun,
+  darkMode: Moon,
+  github: Github,
   menu: (
     <svg
       width="24"
