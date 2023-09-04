@@ -1,4 +1,18 @@
-import { Blocks, Crown, Github, Moon, Sun, X } from "lucide-react";
+import {
+  Blocks,
+  Crown,
+  Github,
+  Moon,
+  Sun,
+  X,
+  Instagram,
+  Twitter,
+  Users,
+  Mail,
+  UserPlus,
+} from "lucide-react";
+import { BsLayoutTextWindow } from "react-icons/bs";
+import { FaDiscord } from "react-icons/fa";
 
 export const Icons = {
   logo: Blocks,
@@ -7,6 +21,13 @@ export const Icons = {
   lightMode: Sun,
   darkMode: Moon,
   github: Github,
+  instagram: Instagram,
+  twitter: Twitter,
+  users: Users,
+  join: UserPlus,
+  discord: FaDiscord,
+  blog: BsLayoutTextWindow,
+  mail: Mail,
   menu: (
     <svg
       width="24"
