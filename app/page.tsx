@@ -1,5 +1,5 @@
 import { Icons } from "@/components/icons";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import Balancer from "react-wrap-balancer";
 
 import { cn } from "@/lib/utils";
@@ -7,10 +7,17 @@ import Image from "next/image";
 import Link from "next/link";
 import BlogCard from "@/components/blog-card";
 import Footer from "@/components/footer";
+import MainNavbar from "@/components/main-nav";
+import { NavbarItems } from "@/config/navbar";
 
 export default function Home() {
   return (
     <>
+      <header className="container z-40 bg-background">
+        <div className="flex h-20 items-center justify-between py-6">
+          <MainNavbar items={NavbarItems} />
+        </div>
+      </header>
       <section className="space-y-6 pb-8 pt-6 md:mt-0 md:pb-12 md:pt-10 lg:py-32">
         <div className="container flex flex-col gap-5 md:flex-row md:justify-center">
           <div className="bottom-0 left-0 flex flex-col items-center justify-center gap-1 md:items-start">

@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
 import MainNavbar from "@/components/main-nav";
 import { NavbarItems } from "@/config/navbar";
+import { Toaster } from "@/components/ui/toaster";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -47,14 +48,9 @@ export default function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <div className="flex min-h-screen flex-col">
-            <header className="container z-40 bg-background">
-              <div className="flex h-20 items-center justify-between py-6">
-                <MainNavbar items={NavbarItems} />
-              </div>
-            </header>
-
             <main className="flex-1">{children}</main>
           </div>
+          <Toaster />
           <TailwindIndicator />
         </ThemeProvider>
       </body>
