@@ -8,6 +8,7 @@ import { TailwindIndicator } from "@/components/tailwind-indicator";
 import MainNavbar from "@/components/main-nav";
 import { NavbarItems } from "@/config/navbar";
 import { Toaster } from "@/components/ui/toaster";
+import { getCurrentUser } from "@/lib/auth/session";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -31,11 +32,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const user = await getCurrentUser();
+
+  console.log(user);
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head />

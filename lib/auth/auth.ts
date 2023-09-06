@@ -1,13 +1,14 @@
 import { NextAuthOptions } from "next-auth";
-import EmailProvider from "next-auth/providers/email";
+import EmailProvider, { EmailConfig } from "next-auth/providers/email";
 import GitHubProvider from "next-auth/providers/github";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { createTransport } from "nodemailer";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 import { env } from "@/env.mjs";
-import { db } from "./database";
-import { databse } from "./drizzle-adaptar";
+import { db } from "../database";
+import { databse } from "../drizzle-adaptar";
+import { CredentialsAuthorization } from "@/types";
 
 export const authOptions: NextAuthOptions = {
   adapter: DrizzleAdapter(db),
@@ -34,39 +35,45 @@ export const authOptions: NextAuthOptions = {
         },
       },
       sendVerificationRequest: async ({ identifier, url, provider }) => {
-        console.log(identifier, url, provider);
         const user = await databse.getUserByEmail(identifier);
 
-        const transport = createTransport(provider.server);
-        const result = await transport.sendMail({
-          to: identifier,
-          from: `"Blog Maker App"${provider.from}`,
-          subject: `Activate your account`,
-          html: template("signIn", url),
-          headers: [
-            // Set this to prevent Gmail from threading emails.
-            // See https://stackoverflow.com/questions/23434110/force-emails-not-to-be-grouped-into-conversations/25435722.
+        if (user.emailVerified != null) {
+          const verifiedDate = new Date(user.emailVerified);
+          const currentDate = new Date();
 
-            { key: "X-Entity-Ref-ID", value: new Date().getTime() + "" },
-          ],
-        });
-        const failed = result.rejected.concat(result.pending).filter(Boolean);
+          const timeDifference = currentDate.getTime() - verifiedDate.getTime();
+          const timeExpire = 7 * 24 * 60 * 60 * 1000;
 
-        if (failed.length) {
-          throw new Error(`Email(s) (${failed.join(", ")}) could not be sent`);
+          if (timeDifference > timeExpire) {
+            handleEmail({ identifier, url, provider });
+          } else {
+            return undefined;
+          }
+        } else {
+          handleEmail({ identifier, url, provider });
         }
       },
     }),
     CredentialsProvider({
       name: "register",
       credentials: {},
-      async authorize(credentials, req) {
-        console.log(credentials);
-        const user = { id: "1", name: "J Smith", email: "jsmith@example.com" };
+      async authorize(credentials: any, req) {
+        if (!credentials) return null;
 
-        if (user) {
-          return user;
+        const findUser = await databse.getUserByEmail(credentials.email);
+
+        if (findUser) {
+          return findUser;
         } else {
+          await databse.createUser({
+            email: credentials.email,
+            password: credentials.password,
+            emailVerified: null,
+            image: null,
+            name: null,
+            id: crypto.randomUUID(),
+          });
+
           return null;
         }
       },
@@ -153,4 +160,33 @@ function template(template: "signIn" | "activate", url: string) {
     </table>
   </body>
   `;
+}
+
+async function handleEmail({
+  identifier,
+  url,
+  provider,
+}: {
+  identifier: string;
+  url: string;
+  provider: EmailConfig;
+}) {
+  const transport = createTransport(provider.server);
+  const result = await transport.sendMail({
+    to: identifier,
+    from: `"Blog Maker App"${provider.from}`,
+    subject: `Activate your account`,
+    html: template("signIn", url),
+    headers: [
+      // Set this to prevent Gmail from threading emails.
+      // See https://stackoverflow.com/questions/23434110/force-emails-not-to-be-grouped-into-conversations/25435722.
+
+      { key: "X-Entity-Ref-ID", value: new Date().getTime() + "" },
+    ],
+  });
+  const failed = result.rejected.concat(result.pending).filter(Boolean);
+
+  if (failed.length) {
+    throw new Error(`Email(s) (${failed.join(", ")}) could not be sent`);
+  }
 }

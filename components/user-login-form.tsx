@@ -37,44 +37,40 @@ function UserLoginForm() {
   const [isPasswordShown, setPasswordShown] = useState<boolean>(false);
   const searchParams = useSearchParams();
 
-  function TogglePassword() {
-    setPasswordShown(!isPasswordShown);
-    console.log(getValues().password);
-  }
-
   async function onSubmit(data: FormData) {
-    console.log(errors);
     setIsLoading(true);
 
-    // const signInResult = await signIn("credentials", {
-    //   email: data.email.toLowerCase(),
-    //   password: data.password,
-    //   redirect: false,
-    //   callbackUrl: searchParams?.get("from") || "/dashboard",
-    // });
+    const createUser = await signIn("credentials", {
+      email: data.email.toLowerCase(),
+      password: data.password,
+      redirect: true,
+      callbackUrl: searchParams?.get("from") || "/dashboard",
+    });
 
-    // const checkResult = await signIn("email", {
-    //   email: data.email.toLowerCase(),
-    //   password: data.password,
-    //   register: true,
-    //   redirect: false,
-    //   callbackUrl: searchParams?.get("from") || "/dashboard",
-    // });
+    if (createUser?.error) {
+      const signInResult = await signIn("email", {
+        email: data.email.toLowerCase(),
+        password: data.password,
+        redirect: false,
+        callbackUrl: searchParams?.get("from") || "/dashboard",
+      });
+
+      if (!signInResult?.ok) {
+        return toast({
+          title: "Something went wrong.",
+          description: "Your sign in request failed. Please try again.",
+          variant: "destructive",
+        });
+      }
+
+      return toast({
+        title: "Check your email",
+        description:
+          "We sent you a login link. Be sure to check your spam too.",
+      });
+    }
 
     setIsLoading(false);
-
-    // if (!signInResult?.ok) {
-    //   return toast({
-    //     title: "Something went wrong.",
-    //     description: "Your sign in request failed. Please try again.",
-    //     variant: "destructive",
-    //   });
-    // }
-
-    return toast({
-      title: "Check your email",
-      description: "We sent you a login link. Be sure to check your spam too.",
-    });
   }
 
   return (
@@ -145,7 +141,7 @@ function UserLoginForm() {
               />
               <span
                 className="absolute right-1 top-7 cursor-pointer"
-                onClick={TogglePassword}
+                onClick={() => setPasswordShown(!isPasswordShown)}
               >
                 {isPasswordShown ? (
                   <Icons.passwordShown />
@@ -164,6 +160,7 @@ function UserLoginForm() {
             <button
               type="submit"
               className={cn("w-full", buttonVariants({ variant: "outline" }))}
+              disabled={isLoading}
             >
               Login
             </button>

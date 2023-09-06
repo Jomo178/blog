@@ -11,6 +11,7 @@ export const users = mysqlTable("user", {
   id: varchar("id", { length: 255 }).notNull().primaryKey(),
   name: varchar("name", { length: 255 }),
   email: varchar("email", { length: 255 }).notNull(),
+  password: varchar("password", { length: 255 }).notNull(),
   emailVerified: timestamp("emailVerified", {
     mode: "date",
     fsp: 3,
@@ -49,7 +50,7 @@ export const sessions = mysqlTable("session", {
 });
 
 export const verificationTokens = mysqlTable(
-  "verificationToken",
+  "verificationtoken",
   {
     identifier: varchar("identifier", { length: 255 }).notNull(),
     token: varchar("token", { length: 255 }).notNull(),

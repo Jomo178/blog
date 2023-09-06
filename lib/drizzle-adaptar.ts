@@ -6,7 +6,6 @@ export const databse = {
   createUser: async (userData: InferSelectModel<typeof users>) => {
     await db.insert(users).values({
       ...userData,
-      id: crypto.randomUUID(),
     });
 
     await db
@@ -22,6 +21,8 @@ export const databse = {
       .from(users)
       .where(eq(users.email, email))
       .limit(1);
+
+    console.log(user);
 
     return user[0];
   },
