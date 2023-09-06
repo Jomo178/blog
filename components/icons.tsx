@@ -12,6 +12,8 @@ import {
   UserPlus,
   ChevronRight,
   ChevronLeft,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { BsLayoutTextWindow } from "react-icons/bs";
 import { FaDiscord } from "react-icons/fa";
@@ -30,6 +32,8 @@ export const Icons = {
   twitter: Twitter,
   users: Users,
   join: UserPlus,
+  passwordShown: Eye,
+  passwordNotShown: EyeOff,
   discord: FaDiscord,
   blog: BsLayoutTextWindow,
   google: (props: IconProps) => (

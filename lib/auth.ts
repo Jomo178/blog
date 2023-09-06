@@ -3,6 +3,7 @@ import EmailProvider from "next-auth/providers/email";
 import GitHubProvider from "next-auth/providers/github";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { createTransport } from "nodemailer";
+import CredentialsProvider from "next-auth/providers/credentials";
 
 import { env } from "@/env.mjs";
 import { db } from "./database";
@@ -15,6 +16,7 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: "/login",
+    newUser: "/register",
   },
   providers: [
     GitHubProvider({
@@ -32,6 +34,7 @@ export const authOptions: NextAuthOptions = {
         },
       },
       sendVerificationRequest: async ({ identifier, url, provider }) => {
+        console.log(identifier, url, provider);
         const user = await databse.getUserByEmail(identifier);
 
         const transport = createTransport(provider.server);
@@ -39,7 +42,7 @@ export const authOptions: NextAuthOptions = {
           to: identifier,
           from: `"Blog Maker App"${provider.from}`,
           subject: `Activate your account`,
-          html: HTML(url),
+          html: template("signIn", url),
           headers: [
             // Set this to prevent Gmail from threading emails.
             // See https://stackoverflow.com/questions/23434110/force-emails-not-to-be-grouped-into-conversations/25435722.
@@ -51,6 +54,20 @@ export const authOptions: NextAuthOptions = {
 
         if (failed.length) {
           throw new Error(`Email(s) (${failed.join(", ")}) could not be sent`);
+        }
+      },
+    }),
+    CredentialsProvider({
+      name: "register",
+      credentials: {},
+      async authorize(credentials, req) {
+        console.log(credentials);
+        const user = { id: "1", name: "J Smith", email: "jsmith@example.com" };
+
+        if (user) {
+          return user;
+        } else {
+          return null;
         }
       },
     }),

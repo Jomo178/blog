@@ -28,32 +28,48 @@ function UserLoginForm() {
     register,
     handleSubmit,
     formState: { errors },
+    getValues,
   } = useForm<FormData>({
     resolver: zodResolver(userAuthSchema),
   });
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isPasswordShown, setPasswordShown] = useState<boolean>(false);
   const searchParams = useSearchParams();
 
+  function TogglePassword() {
+    setPasswordShown(!isPasswordShown);
+    console.log(getValues().password);
+  }
+
   async function onSubmit(data: FormData) {
+    console.log(errors);
     setIsLoading(true);
 
-    const signInResult = await signIn("email", {
-      email: data.email.toLowerCase(),
-      redirect: false,
-      callbackUrl: searchParams?.get("from") || "/dashboard",
-    });
+    // const signInResult = await signIn("credentials", {
+    //   email: data.email.toLowerCase(),
+    //   password: data.password,
+    //   redirect: false,
+    //   callbackUrl: searchParams?.get("from") || "/dashboard",
+    // });
+
+    // const checkResult = await signIn("email", {
+    //   email: data.email.toLowerCase(),
+    //   password: data.password,
+    //   register: true,
+    //   redirect: false,
+    //   callbackUrl: searchParams?.get("from") || "/dashboard",
+    // });
 
     setIsLoading(false);
 
-    if (!signInResult?.ok) {
-      return toast({
-        title: "Something went wrong.",
-        description: "Your sign in request failed. Please try again.",
-        variant: "destructive",
-      });
-    }
-
-    console.log(signInResult);
+    // if (!signInResult?.ok) {
+    //   return toast({
+    //     title: "Something went wrong.",
+    //     description: "Your sign in request failed. Please try again.",
+    //     variant: "destructive",
+    //   });
+    // }
 
     return toast({
       title: "Check your email",
@@ -106,14 +122,42 @@ function UserLoginForm() {
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
+                placeholder="name@example.com"
                 type="email"
-                placeholder="example@example.com"
+                autoCapitalize="none"
+                autoComplete="email"
+                autoCorrect="off"
                 {...register("email")}
               />
+              {errors?.email && (
+                <p className="px-1 text-xs text-red-600">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
-            <div className="grid gap-2">
+            <div className="relative grid gap-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" />
+              <Input
+                id="password"
+                type={isPasswordShown ? "text" : "password"}
+                autoComplete="new-password"
+                {...register("password")}
+              />
+              <span
+                className="absolute right-1 top-7 cursor-pointer"
+                onClick={TogglePassword}
+              >
+                {isPasswordShown ? (
+                  <Icons.passwordShown />
+                ) : (
+                  <Icons.passwordNotShown size={22} />
+                )}
+              </span>
+              {errors?.password && (
+                <p className="px-1 text-xs text-red-600">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
           </CardContent>
           <CardFooter>
