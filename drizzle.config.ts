@@ -6,7 +6,7 @@ export default {
   out: "./lib/database/migrations",
   breakpoints: true,
   dbCredentials: {
-    connectionString: "mysql://root:HalloHallo1@localhost:3306/blog",
+    connectionString: "mysql://root:root@localhost:3306/blogs",
   },
   driver: "mysql2",
 } satisfies Config;
