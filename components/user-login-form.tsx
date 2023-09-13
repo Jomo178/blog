@@ -43,7 +43,7 @@ function UserLoginForm() {
     const createUser = await signIn("credentials", {
       email: data.email.toLowerCase(),
       password: data.password,
-      redirect: true,
+      redirect: false,
       callbackUrl: searchParams?.get("from") || "/dashboard",
     });
 

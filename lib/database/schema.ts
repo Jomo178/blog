@@ -4,6 +4,7 @@ import {
   mysqlTable,
   primaryKey,
   varchar,
+  serial,
 } from "drizzle-orm/mysql-core";
 // import type { AdapterAccount } from "@auth/core/adapters";
 
@@ -16,7 +17,7 @@ export const users = mysqlTable("user", {
     mode: "date",
     fsp: 3,
   }).defaultNow(),
-  image: varchar("image", { length: 255 }),
+  image: varchar("image", { length: 255 }).default("/images/profile.webp"),
 });
 
 export const accounts = mysqlTable(

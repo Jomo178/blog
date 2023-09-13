@@ -60,22 +60,14 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials: any, req) {
         if (!credentials) return null;
 
-        const findUser = await databse.getUserByEmail(credentials.email);
-
-        if (findUser) {
-          return findUser;
-        } else {
-          await databse.createUser({
+        let findUser = await databse.getUserByEmail(credentials.email);
+        if (!findUser)
+          findUser = await databse.createUser({
             email: credentials.email,
             password: credentials.password,
-            emailVerified: null,
-            image: null,
-            name: null,
-            id: crypto.randomUUID(),
           });
 
-          return null;
-        }
+        return findUser;
       },
     }),
   ],

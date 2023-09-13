@@ -13,3 +13,12 @@ export type CredentialsAuthorization =
       json: string;
     }
   | undefined;
+
+export type UserSchema = {
+  id?: string;
+  name?: string;
+  email: string;
+  password: string;
+  emailVerified?: Date;
+  image?: string;
+};
