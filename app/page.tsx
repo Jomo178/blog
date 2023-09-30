@@ -9,13 +9,16 @@ import BlogCard from "@/components/blog-card";
 import Footer from "@/components/footer";
 import MainNavbar from "@/components/main-nav";
 import { NavbarItems } from "@/config/navbar";
+import { getCurrentUser } from "@/lib/auth/session";
 
-export default function Home() {
+export default async function Home() {
+  const user = await getCurrentUser();
+
   return (
     <>
       <header className="container z-40 bg-background">
         <div className="flex h-20 items-center justify-between py-6">
-          <MainNavbar items={NavbarItems} />
+          <MainNavbar items={NavbarItems} user={user} />
         </div>
       </header>
       <section className="space-y-6 pb-8 pt-6 md:mt-0 md:pb-12 md:pt-10 lg:py-32">

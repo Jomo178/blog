@@ -14,6 +14,7 @@ import {
   ChevronLeft,
   Eye,
   EyeOff,
+  User,
 } from "lucide-react";
 import { BsLayoutTextWindow } from "react-icons/bs";
 import { FaDiscord } from "react-icons/fa";
@@ -34,6 +35,7 @@ export const Icons = {
   join: UserPlus,
   passwordShown: Eye,
   passwordNotShown: EyeOff,
+  user: User,
   discord: FaDiscord,
   blog: BsLayoutTextWindow,
   google: (props: IconProps) => (

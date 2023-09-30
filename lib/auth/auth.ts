@@ -4,6 +4,7 @@ import GitHubProvider from "next-auth/providers/github";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { createTransport } from "nodemailer";
 import CredentialsProvider from "next-auth/providers/credentials";
+import bcrypt from "bcrypt";
 
 import { env } from "@/env.mjs";
 import { db } from "../database";
@@ -24,50 +25,35 @@ export const authOptions: NextAuthOptions = {
       clientId: env.GITHUB_CLIENT_ID,
       clientSecret: env.GITHUB_CLIENT_SECRET,
     }),
-    EmailProvider({
-      from: env.SMTP_FROM,
-      server: {
-        host: process.env.SMTP_HOST,
-        port: Number(process.env.SMTP_PORT),
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASSWORD,
-        },
-      },
-      sendVerificationRequest: async ({ identifier, url, provider }) => {
-        const user = await databse.getUserByEmail(identifier);
-
-        if (user.emailVerified != null) {
-          const verifiedDate = new Date(user.emailVerified);
-          const currentDate = new Date();
-
-          const timeDifference = currentDate.getTime() - verifiedDate.getTime();
-          const timeExpire = 7 * 24 * 60 * 60 * 1000;
-
-          if (timeDifference > timeExpire) {
-            handleEmail({ identifier, url, provider });
-          } else {
-            return undefined;
-          }
-        } else {
-          handleEmail({ identifier, url, provider });
-        }
-      },
-    }),
     CredentialsProvider({
-      name: "register",
+      name: "login",
       credentials: {},
-      async authorize(credentials: any, req) {
-        if (!credentials) return null;
+      async authorize(credentials, req) {
+        const typedCredential = credentials as CredentialsAuthorization;
+        if (!typedCredential) return null;
 
-        let findUser = await databse.getUserByEmail(credentials.email);
-        if (!findUser)
+        const { email, password } = typedCredential;
+        const saltRounds = 5;
+        const salt = bcrypt.genSaltSync(saltRounds);
+        const hashedPassword = bcrypt.hashSync(password, salt);
+
+        let findUser = await databse.getUserByEmail(email);
+        if (!findUser) {
           findUser = await databse.createUser({
-            email: credentials.email,
-            password: credentials.password,
+            email,
+            password: hashedPassword,
           });
 
-        return findUser;
+          return findUser;
+        }
+
+        const isPasswordValid = bcrypt.compareSync(password, findUser.password);
+
+        if (isPasswordValid) {
+          return findUser;
+        } else {
+          return null;
+        }
       },
     }),
   ],

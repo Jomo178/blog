@@ -5,10 +5,8 @@ import { Inter as FontSans } from "next/font/google";
 import localFont from "next/font/local";
 import { cn } from "@/lib/utils";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
-import MainNavbar from "@/components/main-nav";
-import { NavbarItems } from "@/config/navbar";
 import { Toaster } from "@/components/ui/toaster";
-import { getCurrentUser } from "@/lib/auth/session";
+import { QueryProvider } from "@/lib/context/useQuery";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -37,10 +35,6 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = await getCurrentUser();
-
-  console.log(user);
-
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
@@ -53,7 +47,9 @@ export default async function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <div className="flex min-h-screen flex-col">
-            <main className="flex-1">{children}</main>
+            <main className="flex-1">
+              <QueryProvider>{children}</QueryProvider>
+            </main>
           </div>
           <Toaster />
           <TailwindIndicator />

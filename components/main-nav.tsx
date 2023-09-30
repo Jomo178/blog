@@ -10,16 +10,21 @@ import MobileNavbar from "./mobile-nav";
 import { useSelectedLayoutSegment } from "next/navigation";
 import { NavbarItems } from "@/types";
 import ToggleTheme from "./toggle-theme";
+import Image from "next/image";
+import { User } from "next-auth";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 interface MobileNavProps {
   items: NavbarItems[];
+  user?: Omit<User, "id">;
   children?: React.ReactNode;
 }
 
-function MainNavbar({ items, children }: MobileNavProps) {
+function MainNavbar({ items, children, user }: MobileNavProps) {
   const [showMobileMenu, setShowMobileMenu] = useState<boolean>(false);
   const segment = useSelectedLayoutSegment();
 
+  console.log(user, "navbar");
   return (
     <>
       <nav className="flex w-full justify-between">
@@ -48,25 +53,31 @@ function MainNavbar({ items, children }: MobileNavProps) {
         </div>
         <div className="flex items-center gap-3">
           <ToggleTheme />
-          <Link
-            href="/premium"
-            className={cn(
-              buttonVariants({ variant: "secondary", size: "lg" }),
-              "gap-2 px-4"
-            )}
-          >
-            <Icons.premium strokeWidth={3} size={18} />
-            Premium
-          </Link>
-          <Link
-            href="/login"
-            className={cn(
-              buttonVariants({ variant: "secondary", size: "lg" }),
-              "hidden px-4 md:flex"
-            )}
-          >
-            Login
-          </Link>
+          {user ? (
+            <UserAvatar user={user} />
+          ) : (
+            <>
+              <Link
+                href="/premium"
+                className={cn(
+                  buttonVariants({ variant: "secondary", size: "lg" }),
+                  "gap-2 px-4"
+                )}
+              >
+                <Icons.premium strokeWidth={3} size={18} />
+                Premium
+              </Link>
+              <Link
+                href="/login"
+                className={cn(
+                  buttonVariants({ variant: "secondary", size: "lg" }),
+                  "hidden px-4 md:flex"
+                )}
+              >
+                Login
+              </Link>
+            </>
+          )}
           <Button
             onClick={() => setShowMobileMenu(!showMobileMenu)}
             variant="ghost"
@@ -80,6 +91,25 @@ function MainNavbar({ items, children }: MobileNavProps) {
           <MobileNavbar items={items}>{children}</MobileNavbar>
         )}
       </nav>
+    </>
+  );
+}
+
+function UserAvatar({ user, ...props }: { user: Omit<User, "id"> }) {
+  return (
+    <>
+      <p>{user.name}</p>
+      <Avatar {...props}>
+        {user.image ? (
+          <>
+            <AvatarImage alt="Picture" src={user.image} />
+          </>
+        ) : (
+          <AvatarFallback>
+            <Icons.user className="h-4 w-4" />
+          </AvatarFallback>
+        )}
+      </Avatar>
     </>
   );
 }

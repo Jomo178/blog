@@ -1,14 +1,12 @@
 import { InferSelectModel, eq } from "drizzle-orm";
 import { db } from "./database";
 import { users } from "./database/schema";
-import { UserSchema } from "@/types";
+import { OmitedUserSchema } from "@/types";
 
 export const databse = {
-  createUser: async (userData: UserSchema) => {
+  createUser: async (userData: OmitedUserSchema) => {
     await db.insert(users).values({
-      id: crypto.randomUUID(),
-      email: userData.email,
-      password: userData.password,
+      ...userData,
     });
 
     const user = await db

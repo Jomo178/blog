@@ -5,11 +5,16 @@ import {
   primaryKey,
   varchar,
   serial,
+  getTableConfig,
 } from "drizzle-orm/mysql-core";
-// import type { AdapterAccount } from "@auth/core/adapters";
+
+import { createId } from "@paralleldrive/cuid2";
 
 export const users = mysqlTable("user", {
-  id: varchar("id", { length: 255 }).notNull().primaryKey(),
+  id: varchar("id", { length: 255 })
+    .$defaultFn(() => createId())
+    .notNull()
+    .primaryKey(),
   name: varchar("name", { length: 255 }),
   email: varchar("email", { length: 255 }).notNull(),
   password: varchar("password", { length: 255 }).notNull(),

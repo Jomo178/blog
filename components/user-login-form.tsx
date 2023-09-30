@@ -17,7 +17,7 @@ import { userAuthSchema } from "@/lib/validations/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "@/lib/utils";
 import { signIn } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import * as z from "zod";
 import { toast } from "./ui/use-toast";
 
@@ -28,7 +28,7 @@ function UserLoginForm() {
     register,
     handleSubmit,
     formState: { errors },
-    getValues,
+    setError,
   } = useForm<FormData>({
     resolver: zodResolver(userAuthSchema),
   });
@@ -36,10 +36,12 @@ function UserLoginForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isPasswordShown, setPasswordShown] = useState<boolean>(false);
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   async function onSubmit(data: FormData) {
     setIsLoading(true);
 
+    router.prefetch("/dashboard");
     const createUser = await signIn("credentials", {
       email: data.email.toLowerCase(),
       password: data.password,
@@ -48,29 +50,14 @@ function UserLoginForm() {
     });
 
     if (createUser?.error) {
-      const signInResult = await signIn("email", {
-        email: data.email.toLowerCase(),
-        password: data.password,
-        redirect: false,
-        callbackUrl: searchParams?.get("from") || "/dashboard",
+      setError("password", {
+        message: "Email or Password is incorrect!",
       });
 
-      if (!signInResult?.ok) {
-        return toast({
-          title: "Something went wrong.",
-          description: "Your sign in request failed. Please try again.",
-          variant: "destructive",
-        });
-      }
-
-      return toast({
-        title: "Check your email",
-        description:
-          "We sent you a login link. Be sure to check your spam too.",
-      });
+      setIsLoading(false);
+    } else {
+      router.replace("/dashboard");
     }
-
-    setIsLoading(false);
   }
 
   return (
@@ -94,14 +81,6 @@ function UserLoginForm() {
               <Button variant="outline">
                 <Icons.google className="mr-2 h-4 w-4" />
                 Google
-              </Button>
-              <Button variant="outline">
-                <Icons.discord className="mr-2 h-4 w-4" />
-                Discord
-              </Button>
-              <Button variant="outline">
-                <Icons.apple className="mr-2 h-4 w-4" />
-                Apple
               </Button>
             </div>
             <div className="relative">
